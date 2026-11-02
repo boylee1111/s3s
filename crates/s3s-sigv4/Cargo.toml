@@ -18,7 +18,11 @@ rustdoc-args = ["--cfg", "docsrs"]
 workspace = true
 
 [features]
+aws-lc-rs = ["dep:aws-lc-rs"]
 openssl = ["dep:openssl"]
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+aws-lc-rs = { workspace = true, optional = true }
 
 [target.'cfg(not(windows))'.dependencies]
 openssl = { workspace = true, optional = true }
