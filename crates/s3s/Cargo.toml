@@ -19,12 +19,16 @@ rustdoc-args = ["--cfg", "docsrs"]
 
 [features]
 default = ["http2", "tokio-timer"]
+aws-lc-rs = ["dep:aws-lc-rs", "s3s-chunked/aws-lc-rs", "s3s-sigv4/aws-lc-rs"]
 openssl = ["dep:openssl", "s3s-sigv4/openssl"]
 http2 = ["hyper/http2"]
 tokio-timer = ["dep:tokio"]
 futures-timer = ["dep:futures-timer"]
 wasm = ["futures-timer?/wasm-bindgen"]
 minio = []
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+aws-lc-rs = { workspace = true, optional = true }
 
 [target.'cfg(not(windows))'.dependencies]
 openssl = { workspace = true, optional = true }

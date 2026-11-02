@@ -118,6 +118,26 @@ impl ChunkBuffer {
     }
 
     /// Hashes the buffered payload without copying it.
+    #[cfg(all(feature = "aws-lc-rs", not(target_arch = "wasm32")))]
+    fn sha256(&self) -> crate::Sha256Sum {
+        let mut hasher = aws_lc_rs::digest::Context::new(&aws_lc_rs::digest::SHA256);
+        match self {
+            Self::Fragments(fragments) => {
+                for fragment in fragments {
+                    hasher.update(fragment.as_ref());
+                }
+            }
+            Self::Coalesced(buffer) => hasher.update(&buffer[..]),
+            Self::Sealed(bytes) => hasher.update(bytes.as_ref()),
+        }
+        let digest = hasher.finish();
+        let mut out = [0_u8; 32];
+        out.copy_from_slice(digest.as_ref());
+        crate::Sha256Sum::from_bytes(out)
+    }
+
+    /// Hashes the buffered payload without copying it.
+    #[cfg(not(all(feature = "aws-lc-rs", not(target_arch = "wasm32"))))]
     fn sha256(&self) -> crate::Sha256Sum {
         use sha2::{Digest, Sha256};
         let mut hasher = Sha256::new();

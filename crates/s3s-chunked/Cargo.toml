@@ -17,6 +17,12 @@ rustdoc-args = ["--cfg", "docsrs"]
 [lints]
 workspace = true
 
+[features]
+aws-lc-rs = ["dep:aws-lc-rs", "s3s-sigv4/aws-lc-rs"]
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+aws-lc-rs = { workspace = true, optional = true }
+
 [dependencies]
 bytes.workspace = true
 futures-core.workspace = true

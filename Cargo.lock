@@ -3728,6 +3728,7 @@ dependencies = [
  "arrayvec",
  "async-trait",
  "atoi",
+ "aws-lc-rs",
  "axum",
  "base64-simd",
  "bytes",
@@ -3810,6 +3811,7 @@ dependencies = [
 name = "s3s-chunked"
 version = "0.18.0-alpha.2"
 dependencies = [
+ "aws-lc-rs",
  "bytes",
  "criterion",
  "futures",
@@ -4016,6 +4018,7 @@ name = "s3s-sigv4"
 version = "0.17.0"
 dependencies = [
  "arrayvec",
+ "aws-lc-rs",
  "base64-simd",
  "hex-simd",
  "hmac 0.13.0",

@@ -21,13 +21,28 @@ pub(crate) fn hex_bytes32<R>(src: &[u8; 32], f: impl FnOnce(&str) -> R) -> R {
     f(ans)
 }
 
-#[cfg(not(all(feature = "openssl", not(windows))))]
+#[cfg(all(feature = "aws-lc-rs", not(target_arch = "wasm32")))]
+fn sha256(data: &[u8]) -> [u8; 32] {
+    let digest = aws_lc_rs::digest::digest(&aws_lc_rs::digest::SHA256, data);
+    let mut ans = [0_u8; 32];
+    ans.copy_from_slice(digest.as_ref());
+    ans
+}
+
+#[cfg(not(any(
+    all(feature = "aws-lc-rs", not(target_arch = "wasm32")),
+    all(feature = "openssl", not(windows))
+)))]
 fn sha256(data: &[u8]) -> [u8; 32] {
     use sha2::{Digest, Sha256};
     <Sha256 as Digest>::digest(data).into()
 }
 
-#[cfg(all(feature = "openssl", not(windows)))]
+#[cfg(all(
+    feature = "openssl",
+    not(windows),
+    not(all(feature = "aws-lc-rs", not(target_arch = "wasm32")))
+))]
 fn sha256(data: &[u8]) -> [u8; 32] {
     use openssl::hash::{Hasher, MessageDigest};
     let mut h = Hasher::new(MessageDigest::sha256()).unwrap();
